@@ -7,6 +7,9 @@ const countdownElTitle = document.getElementById('countdown-title');
 const countdownBtn = document.getElementById('countdown-button');
 const timeElements = document.querySelectorAll('span');
 const info = document.getElementById('submit-info');
+const complete = document.getElementById('complete');
+const completeBtn = document.getElementById('complete-btn');
+
 
 var countdownTitle = '';
 var countdownDate = '';
@@ -32,10 +35,10 @@ dateEl.setAttribute('min', today);
 setInterval(() => {
     // Get the current time value in miliseconds
     timeNow = String(new Date).substring(16,21);
-    // console.log(timeNow);    
-    distandceTimeEl = timeNow.substring(0,2)*3600000 + timeNow.substring(3,5)*60000; 
-    // console.log(distandceTimeEl);
+    distandceTimeEl = timeNow.substring(0,2)*3600000 + timeNow.substring(3,5)*60000;
 }, 2000);
+timeEl.setAttribute('min', timeNow)
+
 
 // populate Countdown / Complete UI
 function updateDOM() {
@@ -46,7 +49,6 @@ function updateDOM() {
         const hours = Math.floor((distance % day)/hour);
         const minutes = Math.floor((distance % hour)/minute);
         const seconds = Math.floor((distance % minute)/second);
-
         //  Populate time elements
         countdownElTitle.textContent = `${countdownTitle}`;
         timeElements[0].textContent = days;
@@ -57,34 +59,39 @@ function updateDOM() {
         inputContainer.hidden = true;
         // Show Countdown
         countdownEl.hidden = false;
-    }, 1000);
+        if (distance < 0) {
+            clearInterval(countdownActive);
+            inputContainer.hidden = true;
+            countdownEl.hidden = true;
+            complete.hidden = false;
+        }
+    }, 1000);    
 }
 
 // Let me know if chage in form field happened
 const checkForm = (e) => {
     if (e.srcElement.attributes[0].ownerElement.id === "date-picker") {
         formSetDate = e.srcElement.value;
+        let minimumMinutes = Number(timeNow.substring(3)) + 1;
+        let minMinutesToForm;
+        minimumMinutes < 10 ? minMinutesToForm = `0${minimumMinutes}` : minMinutesToForm = minimumMinutes;
         if (formSetDate === today) {
-            timeEl.setAttribute('min', `${timeNow.substring(0,2)}:${Number(timeNow.substring(3))+1}`);
+            timeEl.setAttribute('min', `${timeNow.substring(0,2)}:${minMinutesToForm}`);
         } else {
             timeEl.removeAttribute('min')
         }
     }
 }
 
-timeEl.setAttribute('min', timeNow)
-
 function updateCountdown(e) {
     e.preventDefault();
-    console.log(e);
     countdownTitle = e.srcElement[0].value;
     countdownDate = e.srcElement[1].value;
-    countdownTime = e.srcElement[2].value;  
-    // evaluate if date and time fields are filled or not 
+    countdownTime = e.srcElement[2].value;
+    // evaluate if date and time fields are filled or not
     if (countdownDate && countdownTime) {
     // Get number version of current date
     countdownValue = new Date(countdownDate).getTime();
-    console.log('countdown value = ',countdownValue)
     if (formSetDate === today) {
         countdownTimeMsValue = (countdownTime.substring(0,2)*3600000 + countdownTime.substring(3,5)*60000) - distandceTimeEl;
         now = new Date().getTime();
@@ -93,12 +100,10 @@ function updateCountdown(e) {
         countdownTimeMsValue = countdownTime.substring(0,2)*3600000 + countdownTime.substring(3,5)*60000;
         const distance = (countdownValue + countdownTimeMsValue) - now;
     }
-
     updateDOM();
-    } else { 
-        info.hidden = false; 
+    } else {
+        info.hidden = false;
         setTimeout(() => info.hidden = true, 2000)}
-    
 }
 
 // Event lstener
@@ -110,4 +115,9 @@ countdownBtn.addEventListener('click', () => {
     inputContainer.hidden = false;
     // Hide countdown field
     countdownEl.hidden = true;
+    checkForm();
+})
+completeBtn.addEventListener('click', () => {
+    inputContainer.hidden = false;
+    complete.hidden = true;
 })

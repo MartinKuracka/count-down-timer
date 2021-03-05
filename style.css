@@ -11,6 +11,7 @@ body {
   display: flex;
   align-items: center;
   font-family: 'Lato', sans-serif;
+  background-color: #c47c24;
 }
 
 /* Video Background */
@@ -223,5 +224,9 @@ li span {
 
   li span {
     font-size: 30px;
+  }
+
+  label {
+    font-size: 0.8rem;
   }
 }
