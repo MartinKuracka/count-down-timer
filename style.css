@@ -41,7 +41,7 @@ video {
 /* Container */
 .container {
   min-width: 580px;
-  min-height: 304px;
+  min-height: 334px;
   color: black;
   margin: 0 auto;
   padding: 25px 50px;
@@ -100,6 +100,10 @@ input {
 
 .time-sel-field {
   margin-right: 12px;
+}
+
+.info-text {
+  text-align: center;
 }
 
 /* Button */
@@ -214,10 +218,10 @@ li span {
   }
 
   li {
-    font-size: 15px;
+    font-size: 13px;
   }
 
   li span {
-    font-size: 40px;
+    font-size: 30px;
   }
 }
