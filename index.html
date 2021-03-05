@@ -21,9 +21,18 @@
             <form class='form' id="countdownForm">
                 <label for="title">Title</label>
                 <input type="text" id="title" placeholder='What are You counting down to?'>
-                <label for="date-picker">Select a Date</label>
-                <input type="date" id="date-picker">
+                <div class="selection-container">
+                    <div class="date-sel-field">
+                        <label for="date-picker">Select a Date</label>
+                        <input type="date" id="date-picker">
+                    </div>
+                    <div class="time-sel-field">
+                        <label for="time-picker">Select Time</label>
+                        <input type="time" id="time-picker">
+                    </div>
+                </div>
                 <button type='submit'>Submit</button>
+
             </form>
         </div>
         <!-- Countdown -->

@@ -89,6 +89,19 @@ input {
 
 }
 
+.selection-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.selection-container>* {  
+  width: 45%;
+}
+
+.time-sel-field {
+  margin-right: 12px;
+}
+
 /* Button */
 button {
   width: 100%;
