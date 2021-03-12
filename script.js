@@ -23,6 +23,7 @@ var timeNow;
 var distandceTimeEl;
 var timeToAddToCountdown;
 var now;
+var storeLastDistance;
 
 // Define time values for each unit
 const second = 1000;
@@ -41,7 +42,7 @@ setInterval(() => {
 timeEl.setAttribute('min', timeNow)
 
 // populate Countdown / Complete UI
-function updateDOM() {
+function updateDOM() {    
     countdownActive = setInterval(() => {
         // Set time for Europe time zone
         const now = new Date().getTime() + 3600000;
@@ -50,6 +51,7 @@ function updateDOM() {
         const hours = Math.floor((distance % day)/hour);
         const minutes = Math.floor((distance % hour)/minute);
         const seconds = Math.floor((distance % minute)/second);
+        
         //  Populate time elements
         countdownElTitle.textContent = `${countdownTitle}`;
         timeElements[0].textContent = days;
@@ -87,8 +89,8 @@ const checkForm = (e) => {
     }
 }
 
-function updateCountdown(e) {
-    const checkTimerExist = localStorage.getItem('countdownStorage');
+function updateCountdown(e) 
+    const checkTimerExist = localStorage.getItem('storedDate');
     if (checkTimerExist) {
         storageData = JSON.parse(checkTimerExist);
         countdownTitle = storageData.title;
@@ -99,6 +101,7 @@ function updateCountdown(e) {
         countdownTitle = e.srcElement[0].value;
         countdownDate = e.srcElement[1].value;
         countdownTime = e.srcElement[2].value;
+
         countdownStorage = {
             title: countdownTitle,
             date: countdownDate,
@@ -135,7 +138,9 @@ const resetForm = () => {
     complete.hidden = true;
     countdownDate = '';
     countdownTitle = '';
-    localStorage.removeItem('countdownStorage');
+    localStorage.removeItem('storedTitle');
+    localStorage.removeItem('storedDate');
+    localStorage.removeItem('storedTime');
     audio.pause();
     countdownForm.reset();
 }
