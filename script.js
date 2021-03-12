@@ -32,6 +32,13 @@ const minute = second*60;
 const hour = minute*60;
 const day = hour*24;
 
+
+// Get NOW date
+const getNowDate = () => {
+    now = new Date().getTime();
+    return nowdate = now;
+}
+
 // Calculate day, hour, minute and second
 const calculateDaysHoursMinutesSeconds = (distance) => {
     const days = Math.floor(distance/day);
@@ -40,86 +47,6 @@ const calculateDaysHoursMinutesSeconds = (distance) => {
     const seconds = Math.floor((distance % minute)/second);
     return (returnedTimeElements = [days, hours, minutes, seconds]);
 };
-
-
-// set the date and time input minimum with values from NOW
-const today = new Date().toISOString().split('T')[0];
-dateEl.setAttribute('min', today);
-setInterval(() => {
-    // Get the current time value in miliseconds
-    timeNow = String(new Date).substring(16,21);
-    distandceTimeEl = timeNow.substring(0,2)*3600000 + timeNow.substring(3,5)*60000;
-}, 2000);
-timeEl.setAttribute('min', timeNow)
-
-// Populate the DOM elements
-const populateTheDOM = (days, hours, minutes, seconds, countdownTitle) => {
-    //  Populate time elements
-    countdownElTitle.textContent = `${countdownTitle}`;
-    timeElements[0].textContent = days;
-    timeElements[1].textContent = hours;
-    timeElements[2].textContent = minutes;
-    timeElements[3].textContent = seconds;
-    // Hide input field
-    inputContainer.hidden = true;
-    // Show Countdown
-    countdownEl.hidden = false;
-}
-
-// populate Countdown / Complete UI
-function updateValuesForDOM(distance) {
-    if (distance) {
-        distance = distance - 3600000;
-        countdownActive = setInterval(() => {
-            // Set time for Europe time zone
-            // const now = new Date().getTime() + 3600000;
-            distance = distance -1000;
-            calculateDaysHoursMinutesSeconds(distance);
-            populateTheDOM(returnedTimeElements[0], returnedTimeElements[1], returnedTimeElements[2], returnedTimeElements[3], countdownTitle);
-            if (distance < 0) {
-                clearInterval(countdownActive);
-                inputContainer.hidden = true;
-                countdownEl.hidden = true;
-                complete.hidden = false;
-                countdownDate = '';
-                countdownTitle = '';
-                audio.play();
-            }
-        }, 1000);
-    } else {
-        countdownActive = setInterval(() => {
-            // Set time for Europe time zone
-            const now = new Date().getTime() + 3600000;
-            const distance = (countdownValue + countdownTimeMsValue) - now;
-            calculateDaysHoursMinutesSeconds(distance);
-            populateTheDOM(returnedTimeElements[0], returnedTimeElements[1], returnedTimeElements[2], returnedTimeElements[3], countdownTitle);
-            if (distance < 0) {
-                clearInterval(countdownActive);
-                inputContainer.hidden = true;
-                countdownEl.hidden = true;
-                complete.hidden = false;
-                countdownDate = '';
-                countdownTitle = '';
-                audio.play();
-            }
-        }, 1000);
-    }
-}
-
-// Let me know if chage in form field happened
-const liveCheckForm = (e) => {
-    if (e.srcElement.attributes[0].ownerElement.id === "date-picker") {
-        formSetDate = e.srcElement.value;
-        let minimumMinutes = Number(timeNow.substring(3)) + 1;
-        let minMinutesToForm;
-        minimumMinutes < 10 ? minMinutesToForm = `0${minimumMinutes}` : minMinutesToForm = minimumMinutes;
-        if (formSetDate === today) {
-            timeEl.setAttribute('min', `${timeNow.substring(0,2)}:${minMinutesToForm}`);
-        } else {
-            timeEl.removeAttribute('min')
-        }
-    }
-}
 
 // Check ocal storage for stored timer data
 const checkLocalStorage = () => {
@@ -138,6 +65,83 @@ const checkLocalStorage = () => {
     calculateDaysHoursMinutesSeconds(lastStoredDistance);
 };
 
+// When countdown finished
+const finishedCountdown = () => {
+    clearInterval(countdownActive);
+    inputContainer.hidden = true;
+    countdownEl.hidden = true;
+    complete.hidden = false;
+    countdownDate = '';
+    countdownTitle = '';
+    audio.play();
+}
+
+// set the date and time input minimum values to use when selecting
+const today = new Date().toISOString().split('T')[0];
+dateEl.setAttribute('min', today);
+setInterval(() => {
+    // Get the current time value in miliseconds
+    timeNow = String(new Date).substring(16,21);
+    distandceTimeEl = timeNow.substring(0,2)*3600000 + timeNow.substring(3,5)*60000;
+}, 2000);
+timeEl.setAttribute('min', timeNow)
+
+// populate Countdown / Complete UI
+function updateValuesForDOM(distance) {
+    if (distance) {
+        distance = distance - 3600000;
+        countdownActive = setInterval(() => {
+            // Set time for Europe time zone
+            // const now = new Date().getTime() + 3600000;
+            distance = distance -1000;
+            calculateDaysHoursMinutesSeconds(distance);
+            populateTheDOM(returnedTimeElements[0], returnedTimeElements[1], returnedTimeElements[2], returnedTimeElements[3], countdownTitle);
+            if (distance < 0) {
+                finishedCountdown();
+            }
+        }, 1000);
+    } else {
+        countdownActive = setInterval(() => {
+            // Set time for Europe time zone
+            const now = new Date().getTime() + 3600000;
+            const distance = (countdownValue + countdownTimeMsValue) - now;
+            calculateDaysHoursMinutesSeconds(distance);
+            populateTheDOM(returnedTimeElements[0], returnedTimeElements[1], returnedTimeElements[2], returnedTimeElements[3], countdownTitle);
+            if (distance < 0) {
+                finishedCountdown();
+            }
+        }, 1000);
+    }
+}
+
+// Populate the DOM elements
+const populateTheDOM = (days, hours, minutes, seconds, countdownTitle) => {
+    //  Populate time elements
+    countdownElTitle.textContent = `${countdownTitle}`;
+    timeElements[0].textContent = days;
+    timeElements[1].textContent = hours;
+    timeElements[2].textContent = minutes;
+    timeElements[3].textContent = seconds;
+    // Hide input field
+    inputContainer.hidden = true;
+    // Show Countdown
+    countdownEl.hidden = false;
+}
+
+// Let me know if chage in form field happened
+const liveCheckForm = (e) => {
+    if (e.srcElement.attributes[0].ownerElement.id === "date-picker") {
+        formSetDate = e.srcElement.value;
+        let minimumMinutes = Number(timeNow.substring(3)) + 1;
+        let minMinutesToForm;
+        minimumMinutes < 10 ? minMinutesToForm = `0${minimumMinutes}` : minMinutesToForm = minimumMinutes;
+        if (formSetDate === today) {
+            timeEl.setAttribute('min', `${timeNow.substring(0,2)}:${minMinutesToForm}`);
+        } else {
+            timeEl.removeAttribute('min')
+        }
+    }
+}
 
 // Set timer values afte form submit
 const setTimerValues = (e) => {
@@ -167,12 +171,6 @@ const updateLastStoredValue = (countdownValue, countdownTimeMsValue) => {
     distance = (countdownValue + countdownTimeMsValue) - nowdate;
     localStorage.setItem('lastStoredTimeDuration', distance);
     return distance;
-}
-
-// Get NOW date
-const getNowDate = () => {
-    now = new Date().getTime();
-    return nowdate = now;
 }
 
 // update the countdown time
