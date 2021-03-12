@@ -18,7 +18,7 @@
     <div class="container">
         <!-- input -->
         <div class="input-container" id='input-container'>
-            <h1>Create Custom Countdown</h1>
+            <h1>Your Personal Countdown</h1>
             <form class='form' id="countdownForm">
                 <label for="title">Title</label>
                 <input type="text" id="title" placeholder='What are You counting down to?'>
@@ -33,11 +33,11 @@
                     </div>
                 </div>
                 <div class="checkbox">
-                    <input type="checkbox" id="last-timer">
-                    <label for="last-timer">Use the last timer duration</label>
+                    <input type="checkbox">
+                    <label for="last-timer" id="last-timer">Last duration not set yet</label>
                 </div>
                 <button type='submit'>Submit</button>
-                <p class='info-text' id="submit-info" hidden>Date and Time fields must be selected or last timer duration selected</p>
+                <p class='info-text' id="submit-info" hidden>Date and Time or last duration must be selected</p>
             </form>
         </div>
         <!-- Countdown -->
