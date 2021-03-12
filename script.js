@@ -87,25 +87,31 @@ const checkForm = (e) => {
     }
 }
 
-function updateCountdown(e) {   
-    console.log('updateCountdown started');
-    const checkTimerExist = localStorage.getItem('storedDate');
-    console.log(checkTimerExist);
+function updateCountdown(e) {
+    const checkTimerExist = localStorage.getItem('countdownStorage');
     if (checkTimerExist) {
-        countdownTitle = localStorage.getItem('storedTitle');
-        countdownDate = checkTimerExist;
-        countdownTime = localStorage.getItem('storedTime');
+        storageData = JSON.parse(checkTimerExist);
+        countdownTitle = storageData.title;
+        countdownDate = storageData.date;
+        countdownTime = storageData.time;
     } else if (e) {
         e.preventDefault();
         countdownTitle = e.srcElement[0].value;
         countdownDate = e.srcElement[1].value;
         countdownTime = e.srcElement[2].value;
-    } else return    
+        countdownStorage = {
+            title: countdownTitle,
+            date: countdownDate,
+            time: countdownTime,
+        }
+        countdownStorage = JSON.stringify(countdownStorage);
+        localStorage.setItem('countdownStorage', countdownStorage);
+    } else return
     // evaluate if date and time fields are filled or not
     if (countdownDate && countdownTime) {
         // Get number version of current date
         countdownValue = new Date(countdownDate).getTime();
-        // Check for dates and conditional 
+        // Check for dates and conditional
         if (formSetDate === today) {
             countdownTimeMsValue = (countdownTime.substring(0,2)*3600000 + countdownTime.substring(3,5)*60000) - distandceTimeEl;
             now = new Date().getTime();
@@ -116,26 +122,22 @@ function updateCountdown(e) {
             const distance = (countdownValue + countdownTimeMsValue) - now;
         }
         updateDOM();
-        localStorage.setItem('storedTitle', countdownTitle);
-        localStorage.setItem('storedDate', countdownDate);
-        localStorage.setItem('storedTime', countdownTime);
     } else {
         info.hidden = false;
         setTimeout(() => info.hidden = true, 2000)}
 }
 
 // Resest form
-const resetForm = () => {    
+const resetForm = () => {
     clearInterval(countdownActive);
     inputContainer.hidden = false;
     countdownEl.hidden = true;
     complete.hidden = true;
     countdownDate = '';
     countdownTitle = '';
-    localStorage.removeItem('storedTitle');
-    localStorage.removeItem('storedDate');
-    localStorage.removeItem('storedTime');    
+    localStorage.removeItem('countdownStorage');
     audio.pause();
+    countdownForm.reset();
 }
 
 // Event lstener
