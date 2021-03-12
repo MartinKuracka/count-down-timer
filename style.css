@@ -125,7 +125,14 @@ button:hover {
   filter: brightness(110%);
 }
 
+.checkbox {
+  display: inline block;
+  margin-top: 10px;
+}
 
+.checkbox input {
+  width: auto;
+}
 
 /* Countdown */
 ul {

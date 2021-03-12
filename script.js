@@ -42,7 +42,7 @@ setInterval(() => {
 timeEl.setAttribute('min', timeNow)
 
 // populate Countdown / Complete UI
-function updateDOM() {    
+function updateDOM() {
     countdownActive = setInterval(() => {
         // Set time for Europe time zone
         const now = new Date().getTime() + 3600000;
@@ -51,7 +51,7 @@ function updateDOM() {
         const hours = Math.floor((distance % day)/hour);
         const minutes = Math.floor((distance % hour)/minute);
         const seconds = Math.floor((distance % minute)/second);
-        
+
         //  Populate time elements
         countdownElTitle.textContent = `${countdownTitle}`;
         timeElements[0].textContent = days;
@@ -75,7 +75,7 @@ function updateDOM() {
 }
 
 // Let me know if chage in form field happened
-const checkForm = (e) => {
+const liveCheckForm = (e) => {
     if (e.srcElement.attributes[0].ownerElement.id === "date-picker") {
         formSetDate = e.srcElement.value;
         let minimumMinutes = Number(timeNow.substring(3)) + 1;
@@ -89,27 +89,36 @@ const checkForm = (e) => {
     }
 }
 
-function updateCountdown(e) 
-    const checkTimerExist = localStorage.getItem('storedDate');
+// Check ocal storage for stored timer data
+const checkLocalStorage = () => {
+    const checkTimerExist = localStorage.getItem('countdownStorage');
     if (checkTimerExist) {
         storageData = JSON.parse(checkTimerExist);
         countdownTitle = storageData.title;
         countdownDate = storageData.date;
         countdownTime = storageData.time;
-    } else if (e) {
-        e.preventDefault();
-        countdownTitle = e.srcElement[0].value;
-        countdownDate = e.srcElement[1].value;
-        countdownTime = e.srcElement[2].value;
-
-        countdownStorage = {
-            title: countdownTitle,
-            date: countdownDate,
-            time: countdownTime,
-        }
-        countdownStorage = JSON.stringify(countdownStorage);
-        localStorage.setItem('countdownStorage', countdownStorage);
     } else return
+    updateCountdown(countdownTitle, countdownDate, countdownTime);
+};
+
+// Set timer values afte form submit
+const setTimerValues = (e) => {
+    e.preventDefault();
+    countdownTitle = e.srcElement[0].value;
+    countdownDate = e.srcElement[1].value;
+    countdownTime = e.srcElement[2].value;
+    countdownStorage = {
+        title: countdownTitle,
+        date: countdownDate,
+        time: countdownTime,
+    }
+    countdownStorage = JSON.stringify(countdownStorage);
+    localStorage.setItem('countdownStorage', countdownStorage);
+    updateCountdown(countdownTitle, countdownDate, countdownTime);
+}
+
+// update the countdown time
+function updateCountdown(countdownTitle, countdownDate, countdownTime) {
     // evaluate if date and time fields are filled or not
     if (countdownDate && countdownTime) {
         // Get number version of current date
@@ -138,18 +147,16 @@ const resetForm = () => {
     complete.hidden = true;
     countdownDate = '';
     countdownTitle = '';
-    localStorage.removeItem('storedTitle');
-    localStorage.removeItem('storedDate');
-    localStorage.removeItem('storedTime');
+    localStorage.removeItem('countdownStorage');
     audio.pause();
     countdownForm.reset();
 }
 
 // Event lstener
-countdownForm.addEventListener('submit', updateCountdown);
-countdownForm.addEventListener('change', checkForm);
+countdownForm.addEventListener('submit', setTimerValues);
+countdownForm.addEventListener('change', liveCheckForm);
 countdownBtn.addEventListener('click', resetForm);
 completeBtn.addEventListener('click', resetForm);
 
 // On Load
-updateCountdown();
+checkLocalStorage();
