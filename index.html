@@ -12,7 +12,8 @@
     <video class="video-background" loop mute autoplay>
         <source src='time.mp4'>
     </video>
-    <audio src="./alarm.mp3" id='audio' hidden loop></audio>
+    <audio src="./alarm.mp3" id='audio' hidden></audio>
+    <audio id='speech' hidden></audio>
     <div class="video-overlay"></div>
     <!-- Timer window -->
     <div class="container">
@@ -59,6 +60,7 @@
         </div>
     </div>
     <!-- Script -->
+    <script src="voice.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

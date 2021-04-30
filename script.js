@@ -11,6 +11,8 @@ const complete = document.getElementById('complete');
 const completeBtn = document.getElementById('complete-btn');
 const audio = document.getElementById('audio');
 const lastTimer = document.getElementById('last-timer');
+const audioElement = document.getElementById('speech');
+// const speechaudio = document.getElementById('speech');
 
 var countdownTitle = '';
 var countdownDate = '';
@@ -25,6 +27,7 @@ var distandceTimeEl;
 var timeToAddToCountdown;
 var nowdate;
 var lastStoredDistance;
+var audiointerval;
 
 // Define time values for each unit
 const second = 1000;
@@ -48,7 +51,7 @@ const calculateDaysHoursMinutesSeconds = (distance) => {
     return (returnedTimeElements = [days, hours, minutes, seconds]);
 };
 
-// Check ocal storage for stored timer data
+// Check local storage for stored timer data
 const checkLocalStorage = () => {
     const checkTimerExist = localStorage.getItem('countdownStorage');
     if (checkTimerExist) {
@@ -66,14 +69,39 @@ const checkLocalStorage = () => {
 };
 
 // When countdown finished
-const finishedCountdown = () => {
+const finishedCountdown = (countdownTitle) => {
+    console.log(`from finished ${countdownTitle}`)
     clearInterval(countdownActive);
     inputContainer.hidden = true;
     countdownEl.hidden = true;
     complete.hidden = false;
     countdownDate = '';
+    PlayAudios(countdownTitle);
     countdownTitle = '';
-    audio.play();
+}
+
+// Say out loud the title after finish with audio sound as well
+const PlayAudios = (countdownTitle) => {
+    console.log('countdownltitle is:',countdownTitle);
+    audiointerval = setInterval(() => {
+        audio.play();
+        setTimeout(() => sendToSpeech(countdownTitle), 1500);
+    }, audioElement.duration);
+};
+
+// Send Title to speech API
+sendToSpeech = (countdownTitle) => {
+    console.log('sending to speech,', countdownTitle);
+    VoiceRSS.speech({
+        key: 'd4bb3b3e69504439b7518ca9b6f461c7',
+        src: countdownTitle,
+        hl: 'en-us',
+        v: 'Amy',
+        r: 0,
+        c: 'mp3',
+        f: '44khz_16bit_stereo',
+        ssml: false
+    });
 }
 
 // set the date and time input minimum values to use when selecting
@@ -87,7 +115,7 @@ setInterval(() => {
 timeEl.setAttribute('min', timeNow)
 
 // populate Countdown / Complete UI
-function updateValuesForDOM(distance) {
+function updateValuesForDOM(distance,countdownTitle ) {
     if (distance) {
         distance = distance - 3600000;
         countdownActive = setInterval(() => {
@@ -97,7 +125,7 @@ function updateValuesForDOM(distance) {
             calculateDaysHoursMinutesSeconds(distance);
             populateTheDOM(returnedTimeElements[0], returnedTimeElements[1], returnedTimeElements[2], returnedTimeElements[3], countdownTitle);
             if (distance < 0) {
-                finishedCountdown();
+                finishedCountdown(countdownTitle);
             }
         }, 1000);
     } else {
@@ -108,7 +136,7 @@ function updateValuesForDOM(distance) {
             calculateDaysHoursMinutesSeconds(distance);
             populateTheDOM(returnedTimeElements[0], returnedTimeElements[1], returnedTimeElements[2], returnedTimeElements[3], countdownTitle);
             if (distance < 0) {
-                finishedCountdown();
+                finishedCountdown(countdownTitle);
             }
         }, 1000);
     }
@@ -128,7 +156,7 @@ const populateTheDOM = (days, hours, minutes, seconds, countdownTitle) => {
     countdownEl.hidden = false;
 }
 
-// Let me know if chage in form field happened
+// Let me know if change in form field happened
 const liveCheckForm = (e) => {
     if (e.srcElement.attributes[0].ownerElement.id === "date-picker") {
         formSetDate = e.srcElement.value;
@@ -146,9 +174,13 @@ const liveCheckForm = (e) => {
 // Set timer values afte form submit
 const setTimerValues = (e) => {
     e.preventDefault();
+    if(e.srcElement[0].value) {
+        countdownTitle = e.srcElement[0].value;
+    }
     if (e.srcElement[3].checked === true) {
         distance = localStorage.getItem('lastStoredTimeDuration');
-        updateValuesForDOM(distance);
+        countdownTitle = e.srcElement[0].value;
+        updateValuesForDOM(distance, countdownTitle);
     } else {
         countdownTitle = e.srcElement[0].value;
         countdownDate = e.srcElement[1].value;
@@ -206,6 +238,7 @@ function updateCountdown(countdownTitle, countdownDate, countdownTime, e, ) {
 
 // Resest form
 const resetForm = () => {
+    clearInterval(audiointerval);
     clearInterval(countdownActive);
     inputContainer.hidden = false;
     countdownEl.hidden = true;
